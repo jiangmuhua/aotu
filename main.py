@@ -1,6 +1,5 @@
 # coding = UTF-8
-# 爬取自己编写的html链接中的PDF文档,网址：file:///E:/ZjuTH/Documents/pythonCode/pythontest.html
-
+# 爬取自己编写的html链接中的MP4文档
 import urllib.request
 from urllib import parse
 import datetime
@@ -42,6 +41,8 @@ def getFile(url):
     f = ...
     try:
         file_name = url.split('/')[-1]
+        print("准备下载文件 ", file_name);
+
         u = urllib.request.urlopen(url)
         f = open(file_name, 'wb')
 
@@ -53,11 +54,11 @@ def getFile(url):
 
             f.write(buffer)
         f.close()
-        print ("Sucessful to download" + " " + file_name)
+        print ("    Sucessful to download" + " " + file_name)
         return file_name
     except Exception as e:
         f.close()
-        print("下载时发生错误，跳过此文件的下载 ", file_name)
+        print("    下载时发生错误，跳过此文件的下载 ", file_name)
         if os.path.exists(file_name):
             #删除文件，可使用以下两种方法。
             os.remove(file_name)
@@ -65,6 +66,7 @@ def getFile(url):
         return ''
 
 root_url = 'http://www.aotu43.com'
+print("为爱而生. 请稍后……")
 
 if not os.path.exists('mp4_download'):
     os.mkdir('mp4_download')
@@ -82,7 +84,7 @@ c.execute('''CREATE TABLE IF NOT EXISTS MP4_DOWNLOAD
 
 raw_url = root_url
 while raw_url :
-    print("raw_url = " , raw_url)
+    #print("raw_url = " , raw_url)
     html = getHtml(raw_url)
 
     if not html:
@@ -101,7 +103,7 @@ while raw_url :
         mp4_url_lst = getMp4Url(mp4_html)
 
         for mp4Url in mp4_url_lst[:]:
-            print('   mp4Url=', mp4Url)  #形成完整的下载地址
+            # print('   mp4Url=', mp4Url)  #形成完整的下载地址
 
             file_name = mp4Url.split('/')[-1]
 
