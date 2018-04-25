@@ -5,6 +5,6 @@
 ## 使用步骤
 
 - 运行代码
-    ```bash
+    ```bash
     python main.py
     ```
