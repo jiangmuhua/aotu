@@ -39,6 +39,7 @@ def getMp4Url(html):
     return(url_lst)
 
 def getFile(url):
+    f = ...
     try:
         file_name = url.split('/')[-1]
         u = urllib.request.urlopen(url)
@@ -55,7 +56,12 @@ def getFile(url):
         print ("Sucessful to download" + " " + file_name)
         return file_name
     except Exception as e:
-        print(e)
+        f.close()
+        print("下载时发生错误，跳过此文件的下载 ", file_name)
+        if os.path.exists(file_name):
+            #删除文件，可使用以下两种方法。
+            os.remove(file_name)
+
         return ''
 
 root_url = 'http://www.aotu43.com'
