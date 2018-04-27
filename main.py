@@ -82,48 +82,53 @@ c.execute('''CREATE TABLE IF NOT EXISTS MP4_DOWNLOAD
          PARENT_URL   TEXT   NOT NULL,
          CREAT_TIME   DATETIME );''')
 
-raw_url = root_url
-while raw_url :
-    #print("raw_url = " , raw_url)
-    html = getHtml(raw_url)
+try:
+    raw_url = root_url
+    while raw_url :
+        #print("raw_url = " , raw_url)
+        html = getHtml(raw_url)
 
-    if not html:
-        continue
-
-    url_lst = getUrl(html)
-    # print(url_lst)
-    for url in url_lst:
-        s = parse.quote(url)
-        s = root_url + s
-        mp4_html = getHtml(s)
-
-        if not mp4_html:
+        if not html:
             continue
 
-        mp4_url_lst = getMp4Url(mp4_html)
+        url_lst = getUrl(html)
+        # print(url_lst)
+        for url in url_lst:
+            s = parse.quote(url)
+            s = root_url + s
+            mp4_html = getHtml(s)
 
-        for mp4Url in mp4_url_lst[:]:
-            # print('   mp4Url=', mp4Url)  #形成完整的下载地址
-
-            file_name = mp4Url.split('/')[-1]
-
-            c.execute("select count(*) from MP4_DOWNLOAD where ID = :id ", {'id':file_name})
-            count = c.fetchone()[0]
-            if count > 0:
+            if not mp4_html:
                 continue
 
-            fileNm = getFile(mp4Url)
-            if fileNm:
-                sql = '''insert into MP4_DOWNLOAD (ID, MP4_URL, PAGE_URL, PARENT_URL,CREAT_TIME) values (:id, :mp4_url, :page_url, :raw_url, :ctime)'''
-                c.execute(sql, { 'id':fileNm, 'mp4_url':mp4Url, 'page_url':root_url + url, 'raw_url':raw_url, 'ctime':datetime.datetime.now() })
-                conn.commit()
+            mp4_url_lst = getMp4Url(mp4_html)
 
-    nextPage = getNextPage(html)
+            for mp4Url in mp4_url_lst[:]:
+                # print('   mp4Url=', mp4Url)  #形成完整的下载地址
 
-    if len(nextPage) > 0 :
-        raw_url = root_url + nextPage.pop()
-    else:
-        raw_url = ""
+                file_name = mp4Url.split('/')[-1]
 
-conn.close()
-print("处理完成")
+                c.execute("select count(*) from MP4_DOWNLOAD where ID = :id ", {'id':file_name})
+                count = c.fetchone()[0]
+                if count > 0:
+                    continue
+
+                fileNm = getFile(mp4Url)
+                if fileNm:
+                    sql = '''insert into MP4_DOWNLOAD (ID, MP4_URL, PAGE_URL, PARENT_URL,CREAT_TIME) values (:id, :mp4_url, :page_url, :raw_url, :ctime)'''
+                    c.execute(sql, { 'id':fileNm, 'mp4_url':mp4Url, 'page_url':root_url + url, 'raw_url':raw_url, 'ctime':datetime.datetime.now() })
+                    conn.commit()
+
+        nextPage = getNextPage(html)
+
+        if len(nextPage) > 0 :
+            raw_url = root_url + nextPage.pop()
+        else:
+            raw_url = ""
+
+    # 循环处理结束
+    print("处理完成")
+except KeyboardInterrupt:
+    print("任务被取消")
+finally:
+    conn.close()
