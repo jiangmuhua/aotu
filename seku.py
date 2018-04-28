@@ -6,7 +6,7 @@ from urllib import parse
 from datetime import datetime as dt
 #import sqlite3
 from selenium import webdriver
-from pyvirtualdisplay import Display
+from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import re
 import os
@@ -98,6 +98,9 @@ if __name__ == '__main__':
 
     #display = Display(visible=0, size=(800, 600))
     #display.start()
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--disable-gpu')
 
     try:
         maxPage = 2
@@ -114,9 +117,10 @@ if __name__ == '__main__':
             url_lst = getUrl(html)
             for url in url_lst:
                 str = url['href']
-                browser = webdriver.Chrome('../chromedriver.exe')
-                #browser.minimize_window()
-                browser.set_window_size(200, 200)
+                log("正在处理网页:" + str)
+                browser = webdriver.Chrome(executable_path='../chromedriver.exe',chrome_options=chrome_options)
+                #browser = webdriver.Chrome('../chromedriver.exe')
+                #browser.set_window_size(200, 200)
                 browser.get(str)
                 time.sleep(5)
                 fpUi = browser.find_elements_by_class_name("fp-ui")
@@ -127,10 +131,11 @@ if __name__ == '__main__':
                 time.sleep(5)
                 fpUi[0].click()
                 mp4Url = browser.find_element_by_tag_name("video").get_attribute('src')
-                browser.close()
+                browser.quit()
+                #browser.close()
                 if not mp4Url:
                     continue
-
+                log("成功获取视频地址:" + mp4Url)
                 # 获取文件名
                 file_name = mp4Url.split('/')[-2]
                 if os.path.exists(file_name):
