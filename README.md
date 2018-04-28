@@ -6,5 +6,5 @@
 
 - 运行代码
     ```bash
-    python main.py
+    python aotu43.py
     ```
