@@ -41,6 +41,18 @@ def getUrl(html):
 
 # 获取MP4文件链接
 def getMp4Url(html):
+    reg = r'(http:\/\/.*\.mp4).*720p'
+    url_re = re.compile(reg)
+    url_lst = url_re.findall(html.decode('UTF-8'))
+    if len(url_lst) > 0:
+        return url_lst
+
+    reg = r'(http:\/\/.*\.mp4).*360p'
+    url_re = re.compile(reg)
+    url_lst = url_re.findall(html.decode('UTF-8'))
+    if len(url_lst) > 0:
+        return url_lst
+
     reg = r'(http:\/\/.*\.mp4).*240p'
     url_re = re.compile(reg)
     url_lst = url_re.findall(html.decode('UTF-8'))
