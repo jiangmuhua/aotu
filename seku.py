@@ -42,13 +42,6 @@ def getUrl(html):
     url_lst = soup.select('div.list-videos > div.margin-fix > div.item > a')
     return(url_lst)
 
-# 获取MP4文件链接
-def getMp4Url(html):
-    reg = r'(http:\/\/.*\.mp4).*240p'
-    url_re = re.compile(reg)
-    url_lst = url_re.findall(html.decode('UTF-8'))
-    return(url_lst)
-
 # 下载文件
 def getFile(url):
     f = ...
@@ -119,23 +112,29 @@ if __name__ == '__main__':
                 str = url['href']
                 log("正在处理网页:" + str)
                 browser = webdriver.Chrome(executable_path='../chromedriver.exe',chrome_options=chrome_options)
-                #browser = webdriver.Chrome('../chromedriver.exe')
-                #browser.set_window_size(200, 200)
                 browser.get(str)
-                time.sleep(5)
+                time.sleep(3)
                 fpUi = browser.find_elements_by_class_name("fp-ui")
                 if len(fpUi) == 0:
+                    browser.quit()
                     continue
 
                 fpUi[0].click()
-                time.sleep(5)
+                time.sleep(3)
                 fpUi[0].click()
-                mp4Url = browser.find_element_by_tag_name("video").get_attribute('src')
+
+                video = browser.find_element_by_tag_name("video")
+                if not video:
+                    browser.quit()
+                    continue
+
+                mp4Url = video.get_attribute('src')
                 browser.quit()
                 #browser.close()
                 if not mp4Url:
                     continue
                 log("成功获取视频地址:" + mp4Url)
+
                 # 获取文件名
                 file_name = mp4Url.split('/')[-2]
                 if os.path.exists(file_name):
