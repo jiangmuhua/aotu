@@ -60,14 +60,13 @@ def getMp4Url(html):
 
 # 下载文件
 def getFile(url):
-    f = ...
+    block_sz = 8192
     try:
         file_name = url.split('/')[-1]
         u = urllib.request.urlopen(url)
         meta = u.info()
         file_size = int(meta["Content-Length"])
         f = open(file_name, 'wb')
-        block_sz = 8192
         log("下载文件 {0} SIZE={1}M ".format(file_name, round(file_size / 1024 / 1024, 2)))
         time.sleep(1)
         bar = pyprind.ProgBar(file_size / block_sz, monitor=True)
@@ -88,8 +87,8 @@ def getFile(url):
         return file_name
     except Exception as e:
         print(e)
-        if f:
-            f.close()
+        time.sleep(1)
+        f.close()
         log("下载失败，跳过此文件的下载 " + file_name)
         if os.path.exists(file_name):
             #删除文件，可使用以下两种方法。

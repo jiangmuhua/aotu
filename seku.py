@@ -10,6 +10,8 @@ from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
 import re
 import os
+import time
+import pyprind
 
 # open the url and read
 def getHtml(url):
@@ -53,6 +55,8 @@ def getFile(url):
         f = open(file_name, 'wb')
         block_sz = 8192
         log("下载文件 {0} SIZE={1}M ".format(file_name, round(file_size / 1024 / 1024, 2)));
+        time.sleep(1)
+        bar = pyprind.ProgBar(file_size / block_sz, monitor=True)
         while True:
             buffer = u.read(block_sz)
             if not buffer:
@@ -60,13 +64,16 @@ def getFile(url):
 
             f.write(buffer)
             f.flush()
+            bar.update()
 
         f.close()
 
+        time.sleep(1)
         log("下载文件成功 " + file_name)
         return file_name
     except Exception as e:
-        #print(e)
+        print(e)
+        time.sleep(1)
         f.close()
         log("下载失败，跳过此文件的下载 " + file_name)
         if os.path.exists(file_name):
